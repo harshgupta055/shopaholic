@@ -1,0 +1,71 @@
+{% extends 'appUser/basic.html' %}
+{% load static %}
+
+
+{% block title %}
+<title>Order Confirmed || Shopaholic.com</title>
+{% endblock %}
+
+
+{% block body %}
+<div class="container-fluid p-4">
+    <div class="container w-75 p-4 border">
+        <h2 class="pb-2 border-bottom d-flex justify-content-between"><span>Your Order</span></h2>
+        {% for p in order_obj %}
+        <div class="container bg-white cart-box-1 border mt-3 p-3">
+            <h3 class="pb-2 border-bottom"><span class="text-secondary">Order ID: {{p.order_id}}</span></h3>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="conatiner d-flex justify-content-center">
+                        <img src="{{p.product.image.url}}" alt="" class="img-fluid">
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="container p-2">
+                        <h4><a href="/view-product/{{p.product.slug}}/" class="text-dark text-decoration-none">{{p.product}}</a></h4>
+                        <h6 class="text-danger">Price: ₹<span class="price"
+                                id="price{{p.id}}">{{p.product.price}}</span></h6>
+                        <p>Quantity: <span class="text-success">{{p.quantity}}</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="container mt-4 border p-3" id="pricedetails">
+            <h5 class="pb-3 border-bottom">Price Summary</h5>
+            <h6 class="mt-2 d-flex justify-content-between"><span>Name</span><span>Quantity</span><span>Price</span>
+            </h6>
+            {% for p in order_obj %}
+            <p class="d-flex justify-content-between"><span>{{p.product.name|truncatechars:15}}...</span><span
+                    id="quanti{{p.id}}">{{p.quantity}}</span><span class="text-danger">₹{{p.product.price}}</span></p>
+            {% endfor %}
+            <h5 class="d-flex justify-content-between"><span>Total:</span><span class="text-danger">₹<span
+                        id="total">{{total_price}}</span></span></h5>
+        </div>
+
+        <div class="container border p-3 mt-4">
+            <label for="address" class="fw-bold form-label">Deliever to this Address</label>
+            <div class="w-100 border container" id="defaultAddress">
+                <h5 class="ms-3">{{default_add.name}}</h5>
+                <h6 class="ms-3">Phone: <span class="text-success">{{default_add.phone}}</span></h6>
+                <address class="mb-0 ms-3">{{default_add.house}}, {{default_add.area}}, {{default_add.city}},
+                    {{default_add.state}} {{default_add.pin_code}}</address>
+            </div>
+        </div>
+
+        <div class="container border mt-4 p-3">
+            <h5>Payment Mode</h5>
+            <h6 class="text-success">{{payment_mode}}</h6>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-primary px-5">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

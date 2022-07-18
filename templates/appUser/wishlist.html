@@ -1,0 +1,74 @@
+{% extends 'appUser/basic.html' %}
+{% load static %}
+
+
+{% block title %}
+<title>Your Wish List || Shopaholic.com</title>
+<style>
+    #msg {
+        background-color: aliceblue;
+        padding: 10px;
+        color: black;
+        position: fixed;
+        bottom: 70px;
+        right: 70px;
+    }
+</style>
+{% endblock %}
+
+
+{% block body %}
+<div class="container-fluid p-4">
+    <div class="container w-75 p-4 border border-2 border-dark shadow">
+        <h2 class="pb-2 border-bottom">Your Wish List</h2>
+        <div class="container p-0" id="wishlist-box">
+            {% if prod %}
+            {% for p in prod %}
+            <div class="container bg-white cart-box-1 border mt-3 p-3" id="fav-item{{p.id}}">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="conatiner d-flex justify-content-center">
+                            <img src="{{p.image.url}}" alt="" class="img-fluid">
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="container p-2">
+                            <h4><a href="/view-product/{{p.slug}}/"
+                                    class="text-dark text-decoration-none">{{p.name}}</a></h4>
+                            <h6 class="text-danger">Price: ₹{{p.price}}</h6>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <div>
+                                <input type="hidden" name="id" id="prod_id" value="{{prod.id}}">
+                                <button class="btn btn-warning btn-sm mt-3 text-white" id="addtocartbtn">Add to
+                                    Cart</button>
+                            </div>
+                            <div>
+                                {% if request.user in p.favourites.all %}
+                                <img src="{% static 'images/fillheart.png' %}" alt="{{p.id}}" class="me-4 favourite">
+                                {% else %}
+                                <img src="{% static 'images/heart.png' %}" alt="{{p.id}}" class="me-4 favourite">
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <h2 class="p-4 text-center mb-0 text-danger">Your wishlist is empty</h2>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+
+
+<span id="msg"></span>
+
+
+<script src="{% static 'js/wishlist.js' %}"></script>
+
+
+{% endblock %}

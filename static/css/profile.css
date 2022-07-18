@@ -1,0 +1,13 @@
+.main-1{
+    height: 90vh;
+}
+body{
+    background-color: beige;
+}
+#success{
+    display: none;
+    position: fixed;
+    bottom: 150px;
+    right: 30px;
+    z-index: 2;
+}

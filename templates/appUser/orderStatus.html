@@ -1,0 +1,81 @@
+{% extends 'appUser/basic.html' %}
+{% load static %}
+
+{% block title %}
+<title>{{order_obj.order_id}} || Order Status</title>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid d-flex justify-content-center p-4">
+    <div class="container w-75 p-3 border border-2 shadow border-dark">
+        <div class="row">
+            <div class="col-2">
+                <div class="container">
+                    <img src="{{order_obj.prod_image.url}}" alt="" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-10">
+                <div class="container">
+                    {% if order_obj.product %}
+                    <a href="/view-product/{{order_obj.product.slug}}/" class="text-dark text-decoration-none"><h3>{{order_obj.name}}</h3></a>
+                    {% else %}
+                    <a href="/view-product/{{order_obj.name}}/" class="text-dark text-decoration-none"><h3>{{order_obj.name}}</h3></a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="container border-top p-3">
+            <h5 class="border-bottom d-flex justify-content-between pb-3">Order Summary <span class="text-secondary">Order ID: {{order_obj.order_id}}</span></h5>
+            <p class="mb-0 d-flex justify-content-between"><span>Order on</span><span class="text-info">{{order_obj.date_time|date:"d M, Y"}}</span></p>
+            <p class="mb-0 d-flex justify-content-between"><span>Quantity</span><span class="text-success">{{order_obj.quantity}}</span></p>
+            <p class="mb-0 d-flex justify-content-between"><span>Price</span><span class="text-danger">₹{{order_obj.price}}</span></p>
+            <p class="mb-0 d-flex justify-content-between"><span>Total Amount</span><span class="text-danger">₹{{order_obj.amount}}</span></p>
+            <p class="mb-0 d-flex justify-content-between"><span>Payment Mode:</span><span class="text-warning fw-bold">{{order_obj.payment_mode}}</span></p>
+            <div class="container px-0 mt-3 mb-0">
+                <h6>Deliver to:</h6>
+                <p class="mb-0 text-primary">{{order_obj.deliver_to}}</p>
+                <p class="mb-0">Phone: {{order_obj.phone}}</p>
+                <address>{{order_obj.address}}</address>
+            </div>
+        </div>
+        <div class="container p-3">
+            <h5 class="pb-3 border-bottom">Delivery Status</h5>
+            <h6 class="alert alert-info">{{order_obj.status}}</h6>
+            {% if order_obj.status == "Getting Ready for Packing" or order_obj.status == "Packed" or order_obj.status == "Shipped" %}
+            <h6>Estimate Delivery Date: <span class="text-danger">{{order_obj.estimate_dd|date:"d M, Y"}}</span></h6>
+            {% elif order_obj.status == "Delivered" or order_obj.status == "Requested for Return" %}
+            <h6>Delivered on: <span class="text-danger">{{order_obj.estimate_dd|date:"d M, Y"}}</span></h6>
+            {% elif order_obj.status == "Return Approved" %}
+            <h6>Return Pickup Estimate Date: <span class="text-danger">{{order_obj.estimate_dd|date:"d M, Y"}}</span></h6>
+            {% elif order_obj.status == "Returned" %}
+            <h6>Returned on: <span class="text-danger">{{order_obj.estimate_dd|date:"d M, Y"}}</span></h6>
+            {% endif %}
+
+        </div>
+
+        <div class="container d-flex justify-content-center p-3 border-top">
+            {% if order_obj.status == "Delivered" %}
+            <form action="{% url 'returnOrder' %}" method="post" id="returnForm">
+                {% csrf_token %}
+                <input type="hidden" name="order_id" value="{{order_obj.order_id}}">
+                <button type="submit" class="btn btn-danger px-5">Return Order</button>
+            </form>
+            {% elif order_obj.status == "Getting Ready for Packing" or order_obj.status == "Packed" or order_obj.status == "Shipped" %}
+            <form action="{% url 'cancelOrder' %}" method="post" id="cancelForm">
+                {% csrf_token %}
+                <input type="hidden" name="order_id" value="{{order_obj.order_id}}">
+                <button type="submit" class="btn btn-warning px-5">Cancel Order</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="{% static 'js/orderStatus.js' %}"></script>
+{% endblock %}

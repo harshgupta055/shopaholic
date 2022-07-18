@@ -1,0 +1,189 @@
+{% extends 'appUser/basic.html' %}
+{% load static %}
+
+
+{% block title %}
+<title>Cart || Shopaholic.com</title>
+{% endblock %}
+
+
+{% block body %}
+<div class="container-fluid p-4">
+  <div class="container w-75 p-4 border">
+    <h2 class="pb-2 border-bottom">Your Selected Products</h2>
+    {% for p in items %}
+    <div class="container bg-white cart-box-1 border mt-3 p-3">
+      <div class="row">
+        <div class="col-md-2">
+          <div class="conatiner d-flex justify-content-center">
+            <img src="{{p.product.image.url}}" alt="" class="img-fluid">
+          </div>
+        </div>
+        <div class="col-md-10">
+          <div class="container p-2">
+            <h4><a href="/view-product/{{p.product.slug}}/" class="text-dark text-decoration-none">{{p.product}}</a>
+            </h4>
+            <h6 class="text-danger">Price: ₹<span class="price" id="price{{p.id}}">{{p.product.price}}</span></h6>
+            <p>Quantity: <span class="text-success">{{p.quantity}}</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="container mt-4 border p-3" id="pricedetails">
+      <h5 class="pb-3 border-bottom">Price Summary</h5>
+      <h6 class="mt-2 d-flex justify-content-between"><span>Name</span><span>Quantity</span><span>Price</span>
+      </h6>
+      {% for p in items %}
+      <p class="d-flex justify-content-between"><span>{{p.product.name|truncatechars:15}}...</span><span
+          id="quanti{{p.id}}">{{p.quantity}}</span><span class="text-danger">₹{{p.product.price}}</span></p>
+      {% endfor %}
+      <h5 class="d-flex justify-content-between"><span>Total:</span><span class="text-danger">₹<span
+            id="total">{{total_price}}</span></span></h5>
+    </div>
+
+    <div class="container shadow border p-3 mt-4">
+      <label for="address" class="fw-bold form-label">Select Address</label>
+      <div id="all-address-box" class="p-0">
+        {% if user_add %}
+        <form action="{% url 'choosePayment' %}" method="get">
+          <!-- {% csrf_token %} -->
+          {% for default_add in user_add %}
+          {% if default_add.default %}
+          <div class="form-check border" style="cursor: pointer;">
+            <input class="form-check-input ms-1 mt-5" type="radio" name="address"
+              id="flexRadioDefault{{default_add.id}}" checked value="{{default_add.id}}">
+            <label class="form-check-label" for="flexRadioDefault{{default_add.id}}">
+              <h5 class="ms-3 mt-3">{{default_add.name}}</h5>
+              <h6 class="ms-3">Phone: <span class="text-success">{{default_add.phone}}</span></h6>
+              <address class="mb-3 ms-3">{{default_add.house}}, {{default_add.area}}, {{default_add.city}},
+                {{default_add.state}} {{default_add.pin_code}}</address>
+            </label>
+          </div>
+          {% else %}
+          <div class="form-check border" style="cursor: pointer;">
+            <input class="form-check-input ms-1 mt-5" type="radio" name="address"
+              id="flexRadioDefault{{default_add.id}}" value="{{default_add.id}}">
+            <label class="form-check-label" for="flexRadioDefault{{default_add.id}}">
+              <h5 class="ms-3 mt-3">{{default_add.name}}</h5>
+              <h6 class="ms-3">Phone: <span class="text-success">{{default_add.phone}}</span></h6>
+              <address class="mb-3 ms-3">{{default_add.house}}, {{default_add.area}}, {{default_add.city}},
+                {{default_add.state}} {{default_add.pin_code}}</address>
+            </label>
+          </div>
+          {% endif %}
+          {% endfor %}
+          <p class="text-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal" style="cursor: pointer;">+
+            Add a New Address</p>
+          <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-warning px-5">Proceed To Payment</button>
+          </div>
+        </form>
+        {% else %}
+        <p class="text-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal" style="cursor: pointer;">+
+          Add a New Address</p>
+        <div class="d-flex justify-content-center mt-4">
+          <button type="submit" disabled class="btn btn-warning px-5">Proceed To Payment</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<button hidden id="close-btn" data-bs-toggle="modal" data-bs-target="#addAddressModal">o</button>
+
+
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add a Address</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="" method="post" id="addAddressForm">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="full_name" class="form-label">Full Name</label>
+            <input type="text" name="full_name" id="full_name" required class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="number" name="phone" id="phone" required class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="pincode" class="form-label">Pincode</label>
+            <input type="number" name="pincode" id="pincode" required class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="house" class="form-label">Flat, House no., Building, Company, Apartment</label>
+            <input type="text" name="house" id="house" required class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="area" class="form-label">Area, Street, Sector, Village</label>
+            <input type="text" name="area" id="area" required class="form-control">
+          </div>
+          <div class="container">
+            <div class="row px-0">
+              <div class="col-6">
+                <div class="mb-3">
+                  <label for="city" class="form-label">City</label>
+                  <input type="text" name="city" id="city" required class="form-control">
+                </div>
+              </div>
+              <div class="col-6">
+                <label for="state" class="form-label">State</label>
+                <select class="form-select" name="state">
+                  <option hidden disabled selected value> -- select a state -- </option>
+                  <option value="Andhra Pradesh">Andhra Pradesh</option>
+                  <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                  <option value="Assam">Assam</option>
+                  <option value="Bihar">Bihar</option>
+                  <option value="Chhattisgarh">Chhattisgarh</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Goa">Goa</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Haryana">Haryana</option>
+                  <option value="Himachal Pradesh">Himachal Pradesh</option>
+                  <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                  <option value="Jharkhand">Jharkhand</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Kerala">Kerala</option>
+                  <option value="Madhya Pradesh">Madhya Pradesh</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Manipur">Manipur</option>
+                  <option value="Meghalaya">Meghalaya</option>
+                  <option value="Mizoram">Mizoram</option>
+                  <option value="Nagaland">Nagaland</option>
+                  <option value="Odissa">Odissa</option>
+                  <option value="Punjab">Punjab</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                  <option value="Sikkim">Sikkim</option>
+                  <option value="Tamil Nadu">Tamil Nadu</option>
+                  <option value="Telangana">Telangana</option>
+                  <option value="Tripura">Tripura</option>
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="Uttarakhand">Uttarakhand</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary btn-sm px-2 me-3" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary px-2 btn-sm me-3">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/proceedToBuy.js' %}"></script>
+
+
+
+
+{% endblock %}

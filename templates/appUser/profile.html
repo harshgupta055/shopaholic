@@ -1,0 +1,149 @@
+{% extends 'appUser/basic.html' %}
+{% load static %}
+
+{% block title %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<title>Profile || Shopaholic.com</title>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid main-1 d-flex justify-content-center align-items-center">
+    <div class="container bg-white border border-dark border-3 shadow w-50 p-4">
+        <h4 class="pb-3 border-bottom">Your Details</h4>
+        <p class="d-flex justify-content-between"><span>Name: </span><span
+                class="text-primary">{{request.user.first_name}} {{request.user.last_name}}</span></p>
+        <p class="d-flex justify-content-between"><span>Email: </span><span
+                class="text-primary">{{request.user.email}}</span></p>
+        <p class="d-flex justify-content-between"><span>Phone: </span><span
+                class="text-primary">{{request.user.phone}}</span></p>
+        <p class="d-flex justify-content-between"><span>Wallet: </span><span
+                class="text-primary">₹{{request.user.wallet}}</span></p>
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-sm btn-info text-white me-3" data-bs-toggle="modal"
+                data-bs-target="#profileUpdateModal">Update Profile</button>
+            <button class="btn btn-sm btn-success" id="changepwdbtn" data-bs-toggle="modal"
+                data-bs-target="#passwordConfirm">Change Password</button>
+        </div>
+        {% if add_obj %}
+        <div class="container mt-2">
+            <h4 class="pt-3 pb-2 mt-3 border-top border-dark">Your Default Address</h4>
+            <h5 class="border-top text-primary mt-0 pt-3">{{add_obj.name}}</h5>
+            <h6><span>Phone: </span><span class="text-success">{{add_obj.phone}}</span></h6>
+            <address>{{add_obj.house}}, {{add_obj.area}}, {{add_obj.city}}, {{add_obj.state}} {{add_obj.pin_code}}
+            </address>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="modal fade" id="profileUpdateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'profile' %}" method="post" id="profileUpdateForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="first_name" id="first_name" required
+                            value="{{request.user.first_name}}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="last_name" id="last_name" required
+                            value="{{request.user.last_name}}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="number" class="form-control" name="phone" id="phone" required
+                            value="{{request.user.phone}}">
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                    <p id="error" style="font-size: 12px;" class="text-center text-danger mb-0 pb-0 mt-2"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="passwordConfirm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirm Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'confirmPassword' %}" method="post" id="confirmPwdForm2">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Enter Your Password*</label>
+                        <input type="password" class="form-control" name="password" id="password" required>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Confirm</button>
+                    </div>
+                    <p id="error2" style="font-size: 12px;" class="text-center text-danger mb-0 pb-0 mt-2"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button hidden data-bs-toggle="modal" data-bs-target="#newPassword" id="newPwdBtn">ok</button>
+
+<div class="modal fade" id="newPassword" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'updatePassword' %}" method="post" id="pwdUpdateForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="password1" class="form-label">Enter New Password*</label>
+                        <input type="password" class="form-control" name="password1" id="password1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password2" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" name="password2" id="password2" required>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Update</button>
+                    </div>
+                    <p id="error3" style="font-size: 12px;" class="text-center text-danger mb-0 pb-0 mt-2"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p id="success" class="text-primary p-2 mb-0 bg-white"></p>
+
+<script>
+    var CSRF_TOKEN = '{{ csrf_token }}';
+</script>
+<script src="{% static 'js/profile.js' %}"></script>
+
+{% endblock %}

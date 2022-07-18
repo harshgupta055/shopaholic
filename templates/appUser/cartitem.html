@@ -1,0 +1,88 @@
+{% extends 'appUser/basic.html' %}
+{% load static %}
+
+
+{% block title %}
+<title>Cart || Shopaholic.com</title>
+{% endblock %}
+
+
+{% block body %}
+<div class="container-fluid p-4">
+    <div class="container w-75 p-4 border">
+        <h2 class="pb-2 border-bottom">Your Cart</h2>
+        <div class="p-0" id="cart-box">
+            {% if items %}
+            {% for p in items %}
+            <div class="container bg-white cart-box-1 border mt-3 p-3">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="conatiner d-flex justify-content-center">
+                            <img src="{{p.product.image.url}}" alt="" class="img-fluid">
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="container p-2">
+                            <h4><a href="/view-product/{{p.product.slug}}/"
+                                    class="text-dark text-decoration-none">{{p.product}}</a>
+                            </h4>
+                            <h6 class="text-danger">Price: ₹<span class="price"
+                                    id="price{{p.id}}">{{p.product.price}}</span></h6>
+                            <div class="d-flex justify-content-between">
+                                <div class="input-group mb-2 mt-4">
+                                    <span class="input-group-text subQbtn" aria-details="{{p.id}}"
+                                        style="cursor: pointer;">-</span>
+                                    <input type="text" class="text-center" min="1" max="5"
+                                        style="width: 60px; border: 0px solid gray;background-color: beige;"
+                                        value="{{p.quantity}}" disabled id="quant{{p.id}}">
+                                    <span class="input-group-text addQbtn" aria-details="{{p.id}}"
+                                        style="cursor: pointer;">+</span>
+                                </div>
+                                <div>
+                                    <img src="{% static 'images/delete.png' %}" alt="{{p.product.id}}"
+                                        class="img-fluid delete-item mt-5" style="cursor: pointer;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="container mt-4 border shadow p-3" id="pricedetails">
+                <h5 class="pb-3 border-bottom">Price Summary</h5>
+                <div class="p-0" id="pricesummary">
+                    <h6 class="mt-2 d-flex justify-content-between">
+                        <span>Name</span><span>Quantity</span><span>Price</span>
+                    </h6>
+                    {% for p in items %}
+                    <p class="d-flex justify-content-between"><span>{{p.product.name|truncatechars:15}}...</span><span
+                            id="quanti{{p.id}}">{{p.quantity}}</span><span
+                            class="text-danger">₹{{p.product.price}}</span>
+                    </p>
+                    {% endfor %}
+                    <h5 class="d-flex justify-content-between"><span>Total:</span><span class="text-danger">₹<span
+                                id="total">{{total_price}}</span></span></h5>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center mt-4">
+                <a href="{% url 'proceedToBuy' %}" class="btn btn-warning px-5">Proceed To Buy</a>
+            </div>
+            {% else %}
+            <h2 class="text-danger p-4 mb-0 text-center">Your Cart is empty!</h2>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script src="{% static 'js/cart.js' %}"></script>
+
+
+
+
+{% endblock %}

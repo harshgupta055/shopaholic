@@ -1,0 +1,71 @@
+{% extends 'appUser/basic.html' %}
+{% load static %}
+
+
+{% block title %}
+<title>My Orders || Shopaholic.com</title>
+{% endblock %}
+
+
+{% block body %}
+<div class="container-fluid p-4">
+    <div class="container w-75 p-4">
+        <h2 class="pb-2 border-bottom">My Orders</h2>
+        {% if orders %}
+        <div class="container shadow border border-dark rounded border-3 mt-3 py-3 px-4">
+            {% for p in orders %}
+            <div class="container shadow rounded cart-box-1 bg-light mb-4 p-3">
+                <h4 class="text-secondary border-bottom pb-2 mb-0">Order ID: <span
+                        class="text-success">{{p.order_id}}</span></h4>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="conatiner d-flex justify-content-center">
+                            {% if p.product %}
+                            <img src="{{p.product.image.url}}" alt="" class="img-fluid">
+                            {% else %}
+                            <img src="{{p.prod_image.url}}" alt="" class="img-fluid">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        {% if p.product %}
+                        <div class="container p-2">
+                            <h4><a href="/view-order-status/{{p.order_id}}/"
+                                    class="text-dark text-decoration-none">{{p.product}}</a>
+                            </h4>
+                            <h6 class="text-danger">Price: ₹<span class="price"
+                                    id="price{{p.id}}">{{p.product.price}}</span></h6>
+                            <p>Quantity: <span class="text-primary">{{p.quantity}}</span></p>
+                        </div>
+                        {% else %}
+                        <div class="container p-2">
+                            <h4><a href="/view-order-status/{{p.order_id}}/"
+                                    class="text-dark text-decoration-none">{{p.name}}</a>
+                            </h4>
+                            <h6 class="text-danger">Price: ₹<span class="price"
+                                    id="price{{p.id}}">{{p.price}}</span></h6>
+                            <p>Quantity: <span class="text-primary">{{p.quantity}}</span></p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <h5 class="text-center mt-5">You didn't order anything yet</h5>
+        <div class="d-flex justify-content-center mt-5">
+            <a href="{% url 'home' %}" class="btn btn-success">Shop Now</a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+
+
+
+
+
+
+{% endblock %}

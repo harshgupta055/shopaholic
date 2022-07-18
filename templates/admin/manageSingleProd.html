@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Manage Product | Admin</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <style>
+        #main {
+            background-color: rgb(153, 248, 255);
+            height: 100vh;
+        }
+
+        #backbtn {
+            position: fixed;
+            top: 40px;
+            left: 50px;
+            background-color: aliceblue;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid d-flex justify-content-center align-items-center p-4" id="main">
+        <div class="container border border-dark border-3 shadow bg-white p-3 w-75">
+            <h2 class="text-center">Shopaholic.com</h2>
+            <h5 class="text-center fw-bold">Manage Product</h5>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-2">
+                        <img src="{{prod.image.url}}" alt="" class="img-fluid">
+                    </div>
+                    <div class="col-10">
+                        <h4 class="">{{prod.name}}</h4>
+                        <p class="mb-2">Price: <span class="text-danger">{{prod.price}}</span></p>
+                        <p class="mb-2">Quantity Left: <span class="text-success">{{prod.quantity}}</span></p>
+                    </div>
+                </div>
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <p class="text-success text-center d-block my-0 pb-0">{{ message }}</p>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            <div class="container p-3 border-top border-dark border-2">
+                <form action="{% url 'updateQuantity' %}" method="post">
+                    {% csrf_token %}
+                    <label for="quantity" class="form-label fw-bold">Update Quantity</label>
+                    <input type="number" name="quantity" class="form-control" id="quantity" required
+                        value="{{prod.quantity}}">
+                    <input type="hidden" name="prod_id" class="form-control" required value="{{prod.id}}">
+                    <button type="submit" class="btn btn-primary mt-1">Update</button>
+                </form>
+            </div>
+            <div class="container p-3 border-top border-dark border-2">
+                <form action="{% url 'deleteProduct' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="prod_id" class="form-control" required value="{{prod.id}}">
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-danger mt-1">Delete this Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <a href="{% url 'products' %}" class="rounded rounded-circle" id="backbtn"><img
+            src="{% static 'images/back-button.png' %}" alt=""></a>
+    <script>
+        $("input").addClass("form-control mb-3");
+        $("option").each(function (i, obj) {
+            $(this).text($(this).text().substring(0, 65))
+        })
+
+        $("textarea").addClass("form-control mb-3");
+        $("select").addClass("form-select mb-3");
+        $("label").addClass("form-label fw-bold mb-1")
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

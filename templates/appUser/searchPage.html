@@ -1,0 +1,38 @@
+{% extends 'appUser/basic.html' %}
+{% load static %}
+
+{% block title %}
+<title>Search</title>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid d-flex justify-content-center p-4">
+    <div class="container border p-3 w-75">
+        <h4 class="fw-bold">Search Result</h4>
+        <div class="container p-0" id="wishlist-box">
+            {% if sf %}
+            {% for p in sf %}
+            <div class="container bg-white cart-box-1 border mt-3 p-3" id="fav-item{{p.id}}">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="conatiner d-flex justify-content-center">
+                            <img src="{{p.image.url}}" alt="" class="img-fluid">
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="container p-2">
+                            <h4><a href="/view-product/{{p.slug}}/"
+                                    class="text-dark text-decoration-none">{{p.name}}</a></h4>
+                            <h6 class="text-danger">Price: ₹{{p.price}}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <h2 class="p-4 text-center mb-0 text-danger">Search didn't match</h2>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

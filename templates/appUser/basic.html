@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+    {% block title %}
+    <title></title>
+    {% endblock %}
+
+    <style>
+        nav {
+            z-index: 2;
+        }
+
+        body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        /* Track */
+        body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        body::-webkit-scrollbar-thumb {
+            background: rgb(35, 35, 35);
+        }
+
+        /* Handle on hover */
+        body::-webkit-scrollbar-thumb:hover {
+            background: rgb(0, 0, 0);
+        }
+
+        #mySidebar {
+            z-index: 10;
+            display: none;
+            position: fixed;
+            top: 0px;
+            width: 350px;
+            right: 0px;
+            border-bottom-left-radius: 15px;
+            height: 100vh;
+            overflow-y: scroll;
+        }
+
+        a {
+            cursor: pointer;
+        }
+
+        #mySidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        /* Track */
+        #mySidebar::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        /* Handle */
+        #mySidebar::-webkit-scrollbar-thumb {
+            background: rgb(255, 249, 249);
+        }
+
+        /* Handle on hover */
+        #mySidebar::-webkit-scrollbar-thumb:hover {
+            background: rgb(255, 255, 255);
+        }
+
+        .side-bar-link {
+            display: block;
+        }
+
+        .side-bar-link:hover {
+            background-color: darkgrey;
+        }
+
+        .close-btn {
+            display: block;
+            cursor: pointer;
+        }
+
+        #search-box {
+            position: fixed;
+            top: 60px;
+            left: 200px;
+            max-height: 200px;
+            overflow-y: scroll;
+            display: none;
+        }
+
+        #search-box::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        /* Track */
+        #search-box::-webkit-scrollbar-track {
+            background: #ffffff;
+        }
+
+        /* Handle */
+        #search-box::-webkit-scrollbar-thumb {
+            background: rgb(221, 221, 221);
+        }
+
+        /* Handle on hover */
+        #search-box::-webkit-scrollbar-thumb:hover {
+            background: rgb(216, 216, 216);
+        }
+
+        .search-links,
+        .search-history-links {
+            display: block;
+            padding: 8px;
+            color: black;
+            text-decoration: none;
+        }
+    </style>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark position-sticky top-0">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white fw-bold" href="{% url 'home' %}"><span><img
+                        src="{% static 'images/cart.png' %}" alt=""></span> Shopaholic</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll"
+                aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarScroll">
+                <form class="d-flex ms-5" action="{% url 'searchPage' %}" method="get" id="searchForm">
+                    <input class="form-control me-2" autocomplete="off" type="search" name="search" id="search"
+                        placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-info" type="submit">Search</button>
+                </form>
+                <ul class="navbar-nav my-2 my-lg-0 navbar-nav-scroll text-end" style="--bs-scroll-height: 100px;">
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <h6 class="text-white pt-3">Hello, {{ request.user.first_name }} {{ request.user.last_name }}
+                        </h6>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <div class="dropdown-center">
+                            <a class="nav-link text-white dropdown-toggle" href="#" id="navbarScrollingDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% static 'images/user.png' %}" alt="">
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarScrollingDropdown">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">Your Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'myAddresses' %}">Your Addresses</a></li>
+                                <li><a class="dropdown-item" href="{% url 'myOrders' %}">Your Orders</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown-center dropdown">
+                        <a class="nav-link text-white" id="walletDropdown" title="wallet" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <img src="{% static 'images/wallet.png' %}" alt="">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="walletDropdown">
+                            <li>
+                                <h6 class="text-white dropdown-item-text d-flex justify-content-center">
+                                    <span id="wallet-box" class="p-0">₹{{request.user.wallet}}</span>
+                                </h6>
+                            </li>
+                            <li class="px-2"><a class="btn btn-sm btn-danger w-100" data-bs-toggle="modal"
+                                    data-bs-target="#passwordConfirm2" id="addBalanceBtn">Add Balance</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" title="wishlist" href="{% url 'wishlistPage' %}"><img
+                                src="{% static 'images/love.png' %}" alt=""></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white position-relative" title="cart" href="/cart/"><img
+                                src="{% static 'images/shopping-cart.png' %}" alt=""><span
+                                class="position-absolute top-0 p-1 start-100 translate-middle badge rounded-pill bg-danger mt-2">
+                                <span id="cart-count" class="p-0">{{request.user.cart_set.all.count}}</span>
+                            </span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" aria-current="page" title="logout" href="{% url 'logout' %}"><img
+                                src="{% static 'images/power.png' %}" alt=""></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" title="categories"><img src="{% static 'images/more.png' %}"
+                                alt="" onclick="w3_open()"></a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item me-3 mt-2">
+                        <a class="btn btn-sm px-3 btn-light" aria-current="page" title="logout"
+                            href="{% url 'signup' %}">Signup</a>
+                    </li>
+                    <li class="nav-item mt-2 me-3">
+                        <a class="btn btn-sm px-3 btn-outline-light" aria-current="page" title="logout"
+                            href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" title="categories"><img src="{% static 'images/more.png' %}"
+                                alt="" onclick="w3_open()"></a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="bg-dark text-white ps-3" id="mySidebar">
+        <a
+            class="close-btn p-2 pt-3 text-white position-sticky top-0 bg-dark fw-bold d-flex justify-content-between text-decoration-none">
+            <h5 class="fw-bolder">Categories</h5> <span onclick="w3_close()">&times;</span>
+        </a>
+        <h6 class="px-2 pt-3 pb-2 mt-2 fw-bold border-top border-white border-3">Electronics</h6>
+        <div class="container">
+            <a href="/category/Smartphones/"
+                class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Smartphones</a>
+            <a href="/category/Laptop/"
+                class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Laptop</a>
+            <a href="/category/TV/" class="side-bar-link p-2 border-top border-light text-white text-decoration-none">TV</a>
+            <a href="/category/Appliances/" class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Appliances</a>
+        </div>
+        <h6 class="px-2 pt-3 pb-2 mt-2 fw-bold border-top border-white border-3">Men's Fashion</h6>
+        <div class="container">
+            <a href="/category/Men-Shirts/"
+                class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Shirts</a>
+            <a href="/category/Men-Tshirts/"
+                class="side-bar-link p-2 border-top border-light text-white text-decoration-none">T-Shirts</a>
+            <a href="/category/Men-Jeans/" class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Jeans</a>
+            <a href="/category/Men-Shoes/" class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Shoes</a>
+            <a href="/category/Men-Innerwear/" class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Innerwear</a>
+        </div>
+        <h6 class="px-2 pt-3 pb-2 mt-2 fw-bold border-top border-white border-3">Women's Fashion</h6>
+        <div class="container">
+            <a href="/category/Women-Western-Wear/"
+                class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Western Wear</a>
+            <a href="/category/Women-Ethnic-Wear/"
+                class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Ethnic Wear</a>
+            <a href="/category/Women-Tops/" class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Tops</a>
+            <a href="/category/Women-Handbags/" class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Handbags</a>
+            <a href="/category/Women-Watches/" class="side-bar-link p-2 border-top border-light text-white text-decoration-none">Watches</a>
+        </div>
+    </div>
+    <div id="body">
+        {% block body %}
+
+        {% endblock %}
+    </div>
+
+
+
+    <div id="search-box" class="w-50 bg-light shadow-sm rounded text-dark">
+        <span id="searchSpan"></span>
+    </div>
+
+
+
+
+
+    <div class="modal fade" id="passwordConfirm2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirm Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'confirmPassword' %}" method="post" id="confirmPwdForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="password3" class="form-label">Enter Your Password*</label>
+                            <input type="password" class="form-control" name="password3" id="password3" required>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-success">Confirm</button>
+                        </div>
+                        <p id="error4" style="font-size: 12px;" class="text-center text-danger mb-0 pb-0 mt-2"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button hidden data-bs-toggle="modal" data-bs-target="#addBalanceModal" id="addBalanceFormBtn">ok</button>
+
+    <div class="modal fade" id="addBalanceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Balance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'addBalance' %}" method="post" id="addBalanceForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Enter Amount to be added*</label>
+                            <input type="number" class="form-control" name="amount" id="amount" required>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-success">Add</button>
+                        </div>
+                        <p id="error5" style="font-size: 12px;" class="text-center text-danger mb-0 pb-0 mt-2"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+    <script>
+        var CSRF_TOKEN = '{{ csrf_token }}';
+    </script>
+    <script src="{% static 'js/basic.js' %}"></script>
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    -->
+</body>
+
+</html>
